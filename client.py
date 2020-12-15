@@ -1,5 +1,6 @@
 import socket
 from Server import server_activision
+from Packets import *
 
 # initialize const values on client side
 PORT = server_activision.PORT
@@ -11,24 +12,21 @@ SERVER_ADDRESS = server_activision.IP
 client_socket = socket.socket()
 client_socket.connect((SERVER_ADDRESS, PORT))
 
-# TODO fix the send message, make different function for types
-# prepare the message before sending
-# the header defines the size of the next message
-def send(message: str, flag):
-    msg = message.encode()  # message in utf-8 to send
-    msg_header = str(len(message)) + "|#|" + flag
-    send_length = msg_header.encode()  # header in utf-8
-    send_length += b' ' * (HEADER - len(send_length))
-    client_socket.send(send_length)  # notify the server about the length
-    client_socket.send(msg)
+
+def send_message(msg: str):
+    client_socket.send(Message(msg).create_packet())
 
 
-send("message test 1", MESSAGE_FLAG)
+def disconnect_session():
+    client_socket.send(Disconnect.create_packet())
+
+
+send_message("message test 1")
 input()
-send("continue - test 2", MESSAGE_FLAG)
+send_message("message test 2")
 input()
-send("continue - test 3", MESSAGE_FLAG)
+send_message("message test 3")
 input()
 
 # close connection and free the thread!
-send("bye bye", DISCONNECT_FLAG)
+disconnect_session()
