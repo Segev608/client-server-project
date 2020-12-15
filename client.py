@@ -1,13 +1,13 @@
 import socket
-from Server import server_activision
+from Server.server_activision import PORT, HEADER_SIZE, HEADER_TYPES, IP
 from Packets import *
 
 # initialize const values on client side
-PORT = server_activision.PORT
-HEADER = server_activision.HEADER_SIZE
-DISCONNECT_FLAG = server_activision.HEADER_TYPES["DISCONNECT"]
-MESSAGE_FLAG = server_activision.HEADER_TYPES["MESSAGE"]
-SERVER_ADDRESS = server_activision.IP
+PORT = PORT
+HEADER = HEADER_SIZE
+DISCONNECT_FLAG = HEADER_TYPES["DISCONNECT"]
+MESSAGE_FLAG = HEADER_TYPES["MESSAGE"]
+SERVER_ADDRESS = IP
 
 client_socket = socket.socket()
 client_socket.connect((SERVER_ADDRESS, PORT))
