@@ -1,9 +1,11 @@
 from socket import *
 from Server import server_activision
 from Packets import END_LINE, FLAG_SEPERATOR
+from time import sleep
 
 
 def client_connection(connection: socket, address: tuple):
+    sleep(0.5)
     print("[NEW CONNECTION ESTABLISHED] "+str(address[0])+" connected")
     live_connection = True
     while live_connection:

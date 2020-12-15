@@ -1,6 +1,6 @@
 from socket import *
 import threading
-from Server import handle_client
+from Server.handle_client import client_connection
 
 
 # headers should be this size
@@ -30,6 +30,6 @@ class Server:
         while True:
             # client has connected to our socket
             connection, address = self.SERVER_SOCKET.accept()
-            new_client_thread = threading.Thread(target=handle_client.client_connection, args=(connection, address))
+            new_client_thread = threading.Thread(target=client_connection, args=(connection, address))
             new_client_thread.start()
             print(f"[ACTIVE CONNECTIONS] {threading.active_count() - 1} connections")
