@@ -1,7 +1,7 @@
 from socket import *
 from Server import server_activision
-from Packets import END_LINE, FLAG_SEPERATOR
 from time import sleep
+from Utilities import Packets
 
 
 def client_connection(connection: socket, address: tuple):
@@ -11,14 +11,14 @@ def client_connection(connection: socket, address: tuple):
     while live_connection:
         # collecting the header section [length|#|type\r\nMessage]
         packet = connection.recv(server_activision.HEADER_SIZE).decode()
-        sections = packet.split(END_LINE)
+        sections = packet.split(Packets.END_LINE)
         header = sections[0]
         Payload = None
         if len(sections) == 2:  # Payload exists
             Payload = sections[1]
 
         # client sent disconnect packet
-        if header.split(FLAG_SEPERATOR)[1] == server_activision.HEADER_TYPES["DISCONNECT"]:
+        if header.split(Packets.FLAG_SEPERATOR)[1] == server_activision.HEADER_TYPES["DISCONNECT"]:
             print(f"[DISCONNECTING] {address} ")
             live_connection = False
 

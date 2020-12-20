@@ -1,6 +1,6 @@
 import socket
 from Server.server_activision import PORT, HEADER_SIZE, HEADER_TYPES, IP
-from Packets import *
+from Utilities.Packets import *
 
 # initialize const values on client side
 PORT = PORT
@@ -14,11 +14,11 @@ client_socket.connect((SERVER_ADDRESS, PORT))
 
 
 def send_message(msg: str):
-    client_socket.send(Message(msg).create_packet())
+    client_socket.send(Packet(message=msg).assemble_packet())
 
 
 def disconnect_session():
-    client_socket.send(Disconnect.create_packet())
+    client_socket.send(Packet(disconnect=True).assemble_packet())
 
 
 send_message("message test 1")
