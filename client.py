@@ -1,4 +1,4 @@
-import socket
+import socket, ssl
 from Server.server_activision import PORT, HEADER_SIZE, HEADER_TYPES, IP
 from Utilities.Packets import *
 
@@ -9,7 +9,8 @@ DISCONNECT_FLAG = HEADER_TYPES["DISCONNECT"]
 MESSAGE_FLAG = HEADER_TYPES["MESSAGE"]
 SERVER_ADDRESS = IP
 
-client_socket = socket.socket()
+socket = socket.socket()
+client_socket = ssl.wrap_socket(socket, ssl_version=ssl.PROTOCOL_TLSv1)
 client_socket.connect((SERVER_ADDRESS, PORT))
 
 
@@ -30,3 +31,4 @@ input()
 
 # close connection and free the thread!
 disconnect_session()
+client_socket.close()

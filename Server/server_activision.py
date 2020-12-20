@@ -13,6 +13,10 @@ HEADER_TYPES_AMOUNT = 2
 # client-destination/server-source port session
 PORT = 9000
 IP = gethostbyname(gethostname())
+path = 'C:\\Users\\User\\'
+
+context = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
+context.load_cert_chain(certfile=path+'public.cer', keyfile=path+'private.key')
 
 
 class Server:
@@ -31,6 +35,8 @@ class Server:
         while True:
             # client has connected to our socket
             connection, address = self.SERVER_SOCKET.accept()
-            new_client_thread = threading.Thread(target=handle_client.client_connection, args=(connection, address))
+            connection_stream = context.wrap_socket(connection, server_side=True)
+            new_client_thread = threading.Thread(target=handle_client.client_connection,
+                                                 args=(connection_stream, address))
             new_client_thread.start()
             print(f"[ACTIVE CONNECTIONS] {threading.active_count() - 1} connections")
