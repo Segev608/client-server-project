@@ -9,7 +9,8 @@ HEADER_SIZE = 65
 # the types are defining how do we going to treat the packet
 HEADER_TYPES = {"DISCONNECT": "close-connection",
                 "MESSAGE": "messaging",
-                "ACTIVE_USERS": "active_sessions_now"}
+                "ACTIVE_USERS": "active_sessions_now",
+                "REGISTRATION": "register_username"}
 # length and type for now
 HEADER_TYPES_AMOUNT = 2
 # client-destination/server-source port session
@@ -37,8 +38,6 @@ class Server:
         while True:
             # client has connected to our socket
             connection, address = self.SERVER_SOCKET.accept()
-            # store the active users on the server
-            self.ACTIVATED_CLIENTS.append(address)
             connection_stream = context.wrap_socket(connection, server_side=True)
             # the server sends the activated clients in order to remove them whenever client has disconnected
             new_client_thread = threading.Thread(target=handle_client.client_connection,

@@ -10,7 +10,12 @@ class Packet:
     def __init__(self, **kwargs):
         self.message_type = None
         self.message = None
-        if 'message' in kwargs.keys():
+        self.username = None
+
+        if 'registration' in kwargs.keys():
+            self.message_type = 'registration'
+            self.username = kwargs['registration']
+        elif 'message' in kwargs.keys():
             self.message = kwargs['message']
             self.message_type = 'message'
         elif 'type' in kwargs.keys() and 'disconnect' in kwargs.values():
@@ -27,6 +32,8 @@ class Packet:
             return self.__create_packet_disconnect()
         elif self.message_type == 'active_users_on_server':
             return self.__create_packet_active_connections()
+        elif self.message_type == 'registration':
+            return self.__create_packet_registration()
 
     def __create_packet_message(self) -> bytes:
         msg_header = str(len(self.message)) + FLAG_SEPERATOR + server_activision.HEADER_TYPES["MESSAGE"]
@@ -50,3 +57,10 @@ class Packet:
         f_message += b' ' * (server_activision.HEADER_SIZE - len(f_message))
         return f_message
 
+    def __create_packet_registration(self):
+        msg_header = str(len(self.username)) + FLAG_SEPERATOR + server_activision.HEADER_TYPES["REGISTRATION"]
+        msg_header += END_LINE
+        msg_header += self.username
+        f_message = msg_header.encode()  # convert to utf-8
+        f_message += b' ' * (server_activision.HEADER_SIZE - len(f_message))
+        return f_message

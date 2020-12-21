@@ -1,6 +1,9 @@
 import socket, ssl
 from Server.server_activision import PORT, HEADER_SIZE, HEADER_TYPES, IP
 from Utilities.Packets import *
+import sys
+
+username = sys.argv[1]
 
 # initialize const values on client side
 PORT = PORT
@@ -13,6 +16,9 @@ socket = socket.socket()
 client_socket = ssl.wrap_socket(socket, ssl_version=ssl.PROTOCOL_TLSv1)
 client_socket.connect((SERVER_ADDRESS, PORT))
 
+# update the server about the client username
+client_socket.send(Packet(registration=username).assemble_packet())
+
 
 def send_message(msg: str):
     client_socket.send(Packet(message=msg).assemble_packet())
@@ -24,23 +30,27 @@ def disconnect_session():
 
 def active_users():
     client_socket.send(Packet(type='active_users_on_server').assemble_packet())
-    data = client_socket.recv(server_activision.HEADER_SIZE)
+    data = client_socket.recv(4096)
     import pickle
     active_list = pickle.loads(data)
     for user in active_list:
-        print(f'{user} is connected right now')
+        if username != user:  # don't print the current user name
+            print(f'{user.strip()} is connected right now')
 
 
-send_message("message test 1")
-input()
-send_message("message test 2")
-input()
-send_message("message test 3")
-input()
-
-active_users()
-input()
-
-# close connection and free the thread!
-disconnect_session()
-client_socket.close()
+if __name__ == '__main__':
+    try:
+        send_message("message test 1")
+        input()
+        send_message("message test 2")
+        input()
+        send_message("message test 3")
+        input()
+        active_users()
+        input()
+        # close connection and free the thread!
+        disconnect_session()
+    except ConnectionResetError:
+        print('The server suddenly disconnected ')
+    finally:
+        client_socket.close()
