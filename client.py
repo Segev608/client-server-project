@@ -19,7 +19,16 @@ def send_message(msg: str):
 
 
 def disconnect_session():
-    client_socket.send(Packet(disconnect=True).assemble_packet())
+    client_socket.send(Packet(type='disconnect').assemble_packet())
+
+
+def active_users():
+    client_socket.send(Packet(type='active_users_on_server').assemble_packet())
+    data = client_socket.recv(server_activision.HEADER_SIZE)
+    import pickle
+    active_list = pickle.loads(data)
+    for user in active_list:
+        print(f'{user} is connected right now')
 
 
 send_message("message test 1")
@@ -27,6 +36,9 @@ input()
 send_message("message test 2")
 input()
 send_message("message test 3")
+input()
+
+active_users()
 input()
 
 # close connection and free the thread!
