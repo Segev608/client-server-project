@@ -1,7 +1,7 @@
 class Colors:
     colors = {
         'BLA': '\u001b[30m',
-        'RED': '\u001b[31m',
+        'RED': '\u001b[31;1m',
         'GRE': '\u001b[32m',
         'YEL': '\u001b[33m',
         'BLU': '\u001b[34m',
@@ -11,3 +11,6 @@ class Colors:
     @staticmethod
     def colorful_str(**kwargs):
         return f'{Colors.colors[kwargs["color"].upper()[:3]]}{kwargs["sentence"]}{Colors.colors["WHI"]}'
+
+
+C_BALL = u"\u25CF"
