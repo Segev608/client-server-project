@@ -2,24 +2,34 @@ from socket import *
 from Server import server_activision
 from time import sleep
 from Utilities import Packets
+from logging import basicConfig, INFO, info
+from datetime import date, datetime
 
 path = "C:\\Users\\User\\PycharmProjects\\Workspace\\"
 
 
 def session_log(client_session):
     # import logging
-    from logging import basicConfig, INFO, info
     # the name file will be stored as client_connection.log
     basicConfig(filename=path+'{}.log'.format(client_session.__name__), level=INFO)
 
     def wrapper(*args, **kwargs):
-        from datetime import date, datetime
         today = date.today()
         now = datetime.now()
         info(f'client {args[1]} started a session in {today.strftime("%b-%d-%Y")} {now.strftime("%H:%M:%S")}')
         return client_session(*args, **kwargs)
 
     return wrapper
+
+
+def get_username(users: list, conn: tuple):
+    find = [user[2] if (user[0] == conn[0]) and (user[1] == conn[1]) else None for user in users]
+    if find.__contains__(None):
+        find.remove(None)
+    if len(find) == 0:
+        return None
+    else:
+        return find
 
 
 @session_log
@@ -52,10 +62,13 @@ def client_connection(connection: socket, address: tuple, active_users: list):
             # client sent data
             elif header.split(Packets.FLAG_SEPERATOR)[1] == server_activision.HEADER_TYPES["REGISTRATION"]:
                 username = Payload  # user has registered with his nickname
-                active_users.append((*address, username))  # store user info
+                active_users.append((*address, username.strip()))  # store user info
 
             elif header.split(Packets.FLAG_SEPERATOR)[1] == server_activision.HEADER_TYPES["MESSAGE"]:
-                print(Payload)
+                today = date.today()
+                now = datetime.now()
+                info(f'client {get_username(active_users, address)} sent the message {Payload.strip()}'
+                     f' {today.strftime("%b-%d-%Y")} {now.strftime("%H:%M:%S")}')
 
             # reserved section
             else:

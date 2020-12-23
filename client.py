@@ -118,6 +118,7 @@ if __name__ == '__main__':
             if not session:
                 user_input = input(f"[{colorful_username}]>> ")
 
+            # in case the user has inserted some input with any meanings, notify him
             if user_input not in COMMANDS:
                 print(f'[system] - {OUTPUT_TYPE["error"]}>> Cannot understand your input')
 
@@ -125,23 +126,28 @@ if __name__ == '__main__':
                 # start a session and begin message mode
                 session = True if user_input in [TO_ADMIN] else False
 
+                # close the chat program
                 if user_input == EXIT:
                     print(f'\n[system] - {OUTPUT_TYPE["logout"]}>> Goodbye ')
                     break
 
                 # start session with other client [in dev] or with admin
                 if session:
-                    msg = input(f'[{colorful_username} - {OUTPUT_TYPE["message"]}]>> ')
+                    if user_input == TO_ADMIN:
+                        msg = input(f'[{colorful_username} - {OUTPUT_TYPE["admin-message"]}]>> ')
+                    elif user_input == TO_CLIENT:
+                        msg = input(f'[{colorful_username} - {OUTPUT_TYPE["session-message"]}]>> ')
                     session = False if msg == TERMINATE_SESSION else True
 
+                # in case user wants to close the current session (admin/another client)
                 if user_input == TERMINATE_SESSION:
                     print(f'\n[system] {OUTPUT_TYPE["error"]}>> You are not in the middle of any session')
                 else:
                     HANDLE_USER_CHOICE[user_input](message=msg)
-            # send_message_server(message)
     except ConnectionResetError:
         print('The server suddenly disconnected ')
     except KeyboardInterrupt:
+        # close the program with ctrl-c option
         print(f'\n[system] - {OUTPUT_TYPE["logout"]}>> Goodbye ')
     finally:
         # close connection and free the thread!
